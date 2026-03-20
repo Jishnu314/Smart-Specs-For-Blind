@@ -1,18 +1,15 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/VisionSense-v1.0.0-1D9E75?style=for-the-badge" alt="version">
+# 👓 Smart Specs
 
-# 👓 VisionSense
+### Open-Source Assistive Spectacles for the Visually Impaired
 
-### Assistive Smart Spectacles for the Visually Impaired
-
-*Real-time object detection → spatial audio feedback → independent navigation*
+*Real-time computer vision · Spatial audio · Edge AI · Wearable*
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3572A5?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![YOLOv8](https://img.shields.io/badge/YOLOv8-Ultralytics-FF6F00?style=flat-square)](https://ultralytics.com)
-[![Raspberry Pi 4](https://img.shields.io/badge/Raspberry%20Pi-4-C51A4A?style=flat-square&logo=raspberrypi&logoColor=white)](https://raspberrypi.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/accessibility-ai/VisionSense?style=flat-square&color=yellow)](https://github.com/accessibility-ai/VisionSense/stargazers)
+[![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-5-C51A4A?style=flat-square&logo=raspberrypi&logoColor=white)](https://raspberrypi.org)
+[![Gemini](https://img.shields.io/badge/Gemini-2.5%20Flash-4285F4?style=flat-square&logo=google&logoColor=white)](https://ai.google.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
 
 </div>
 
@@ -20,143 +17,141 @@
 
 ## 🌍 Overview
 
-**VisionSense** is an open-source assistive technology project that transforms a pair of smart spectacles into an intelligent navigation / assistive companion for visually impaired users.
+**Smart Specs** is an assistive wearable device that gives visually impaired users an intelligent, real-time understanding of their surroundings. Mounted in a pair of spectacles, it fuses a camera, an 8×8 Time-of-Flight depth sensor, an IMU, and bone-conduction speakers into a single pipeline that turns the visual world into spoken audio.
 
-By combining **edge AI object detection**, **depth estimation**, and **spatial audio synthesis**, VisionSense converts the visual world into an intuitive audio landscape — helping users:
+The user navigates through **7 modes** — each focused on a specific task — switched instantly via a 3-button Bluetooth remote (ESP32). All AI inference runs **fully on-device**; an internet connection is only needed for Gemini-powered scene and object descriptions.
 
-- 🚶 **Navigate safely** through indoor and outdoor environments
-- 🚧 **Avoid obstacles** in real time with priority hazard alerts
-- 🗺️ **Understand their surroundings** via natural language scene descriptions
-- 🔑 **Operate independently** without relying on a sighted companion
-
-> *"Person ahead, 2 metres. Door to your left. Stairs down — 3 steps."*
+> *"Person ahead. Door to your left. Stairs — be careful."*
 
 ---
 
-## 📐 System Architecture
+## ✨ Features at a Glance
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                   VisionSense Pipeline                  │
-│                                                         │
-│  ┌──────────┐    ┌──────────┐    ┌──────────────────┐  │
-│  │  Stereo  │───▶│ YOLOv8n  │───▶│  Scene Composer  │  │
-│  │  Camera  │    │ (Edge)   │    │  + Depth Model   │  │
-│  └──────────┘    └──────────┘    └────────┬─────────┘  │
-│                                           │             │
-│                                  ┌────────▼─────────┐  │
-│                                  │   Audio Engine   │  │
-│                                  │  Spatial TTS +   │  │
-│                                  │  Priority Alerts │  │
-│                                  └────────┬─────────┘  │
-│                                           │             │
-│                                  ┌────────▼─────────┐  │
-│                                  │  Bone Conduction │  │
-│                                  │   Headphones     │  │
-│                                  └──────────────────┘  │
-└─────────────────────────────────────────────────────────┘
-```
-
-| Component | Technology | Details |
-|-----------|-----------|---------|
-| Compute | Raspberry Pi 5 (8GB) | ARM Cortex-A76 @ 2.4GHz |
-| Camera | IMX219 Stereo Module | 30fps, 1080p, 120° FoV |
-| Detection | YOLOv8n (ONNX) | 80 COCO classes, ~45ms/frame |
-| Depth | MiDaS v2.1 Small | Monocular depth estimation |
-| Audio | pyttsx3 + pygame | Spatial stereo panning + TTS |
-| Output | Bone conduction speakers | Leaves ears open for ambient sound |
-| Battery | 10,000mAh LiPo | ~6 hours continuous use |
+| Mode | What it does |
+|------|-------------|
+| 🧭 **Navigation** | Continuous obstacle detection via VL53L5CX 8×8 ToF depth grid + haptic & audio warnings |
+| 👤 **Face Recognition** | Identifies enrolled people by name using MobileFaceNet (ncnn) + MediaPipe |
+| ➕ **Face Add** | Enroll a new face live — multi-sample capture, averaged embedding, saved to `face_db.pkl` |
+| 📦 **Object Identifier** | Press H → Gemini AI describes the object held in front of the camera in plain English |
+| 📊 **Barcode Scanner** | TFLite YOLOv8n locates the barcode region; result looked up in `scanned_products.csv` |
+| 🖼 **Scene Mode** | Press H → Gemini describes the full scene in one clear spoken sentence |
+| 📞 **Video Call** | Streams live camera frames to a remote viewer over a peer connection |
 
 ---
 
-## ✨ Features
+## 🏗 System Architecture
 
-### Core Detection
-- **Real-time object recognition** at 30fps with sub-100ms end-to-end latency
-- **80+ object classes** — people, vehicles, furniture, animals, everyday items
-- **Confidence thresholding** to suppress false positives
-
-### Spatial Audio System
-- **Stereo panning** — detected objects pan left/right based on their horizontal position in frame
-- **Distance-based volume** — near objects are louder; far objects are softer
-- **Priority queue** — hazardous objects (vehicles, stairs, doors) interrupt the audio queue
-- **Natural TTS descriptions** — full sentence output: *"Bicycle approaching from the right"*
-
-### Intelligent Scene Understanding
-- **Scene summarisation** — periodic full-scene narration every 5 seconds
-- **Obstacle alerts** — immediate audio burst for sudden hazards entering the frame
-- **Persistent tracking** — objects are tracked across frames to avoid repetitive announcements
-
-### Power & Performance
-- **Low-power mode** — adaptive frame skipping based on battery level
-- **Thermal throttle guard** — reduces inference rate if CPU temperature exceeds 75°C
-- **Offline-first** — all inference runs on-device, no internet required
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                         Smart Specs Runtime                      │
+│                                                                  │
+│  ┌──────────┐   ┌───────────┐   ┌──────────────────────────┐   │
+│  │  Camera  │──▶│  core.py  │──▶│         main.py          │   │
+│  │ 640×480  │   │ (Hardware)│   │  (Conductor / main loop) │   │
+│  └──────────┘   └─────┬─────┘   └────────────┬─────────────┘   │
+│                        │                      │                  │
+│  ┌──────────┐          │         ┌────────────▼──────────────┐  │
+│  │VL53L5CX  │──────────┤         │        state.py           │  │
+│  │8×8 ToF   │          │         │  (Mode FSM + Button Logic) │  │
+│  └──────────┘          │         └────────────┬──────────────┘  │
+│                        │                      │                  │
+│  ┌──────────┐          │         ┌────────────▼──────────────┐  │
+│  │ MPU-6500 │──────────┤         │        models.py          │  │
+│  │   IMU    │          │         │  MobileFaceNet · TFLite   │  │
+│  └──────────┘          │         │  MediaPipe · Gemini       │  │
+│                        │         └────────────┬──────────────┘  │
+│  ┌──────────┐          │                      │                  │
+│  │  Haptic  │◀─────────┘         ┌────────────▼──────────────┐  │
+│  │  Motors  │                    │  tasks/  (per-mode logic)  │  │
+│  └──────────┘                    │  navigation · vision_tasks │  │
+│                                  │  comms                     │  │
+│  ┌──────────┐                    └────────────────────────────┘  │
+│  │ ESP32-BT │──▶ bluetooth_handler.py ──▶ state.handle_button()  │
+│  │  Remote  │                                                    │
+│  └──────────┘                                                    │
+└──────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## 🛠 Hardware Requirements
+## 🔩 Hardware Requirements
 
-```
-Required:
-  - Raspberry Pi 5 (4GB or 8GB recommended)
-  - IMX219 camera module (or USB stereo camera)
-  - Bone conduction headphones (3.5mm or Bluetooth)
-  - MicroSD card (32GB+, Class 10)
-  - 5V/5A USB-C power supply or LiPo battery HAT
+### Required
 
-Optional:
-  - Waveshare AI HAT+ (NPU acceleration, ~3x faster inference)
-  - GPS module (for outdoor waypoint narration)
-  - Ultrasonic HC-SR04 (supplemental close-range detection < 30cm)
-```
+| Component | Spec | Notes |
+|-----------|------|-------|
+| Raspberry Pi 5 | 4 GB or 8 GB | Main compute unit |
+| Camera Module | IMX219 or USB cam | 640×480, connected on `/dev/video0` |
+| VL53L5CX | 8×8 ToF sensor | I2C bus 1 — navigation depth grid |
+| MPU-6500 | IMU, I2C addr `0x68` | Step detection & tilt compensation |
+| Haptic motors | 3× ERM/LRA motors | BCM GPIO 17 (L), 27 (C), 22 (R) |
+| Bone conduction speakers | 3.5 mm or BT | Leaves ears open for ambient sound |
+| ESP32 remote | BLE, advertised as `ESP32-REMOTE` | 3 mode buttons + 1 trigger/home |
+
+### Optional
+
+- **Waveshare AI HAT+** — NPU acceleration, ~3× faster TFLite inference
+- **10,000 mAh LiPo + HAT** — ~6 hours continuous runtime
+- **GPS module** — future outdoor waypoint narration
 
 ---
 
 ## ⚡ Quickstart
 
-### 1. Clone the repository
+### 1 · Clone
 
 ```bash
-git clone https://github.com/accessibility-ai/VisionSense.git
-cd VisionSense
+git clone https://github.com/your-username/smart-specs.git
+cd smart-specs
 ```
 
-### 2. Install dependencies
+### 2 · Install system dependencies
 
 ```bash
-# System packages
-sudo apt update && sudo apt install -y python3-pip libportaudio2 espeak
+sudo apt update && sudo apt install -y \
+  python3-pip libportaudio2 espeak \
+  libatlas-base-dev libjasper-dev libhdf5-dev
+```
 
-# Python packages
+### 3 · Install Python packages
+
+```bash
 pip install -r requirements.txt
 ```
 
-### 3. Download models
+### 4 · Set your Gemini API key
 
-```bash
-python scripts/download_models.py
-# Downloads yolov8n.onnx (~6MB) and midas_v21_small.onnx (~68MB)
+Open `models.py` and replace the placeholder:
+
+```python
+GENAI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"
 ```
 
-### 4. Run VisionSense
+> Get a free key at [aistudio.google.com](https://aistudio.google.com).
+> For production use, load it from an environment variable instead — see [Security Notes](#️-security-notes).
 
-```bash
-# Standard mode
-python detect.py --model models/yolov8n.onnx --audio spatial
+### 5 · Place model files
 
-# With depth estimation
-python detect.py --model models/yolov8n.onnx --depth --audio spatial
-
-# Low-power mode (longer battery life)
-python detect.py --model models/yolov8n.onnx --low-power --fps 15
+```
+smart-specs/
+├── models/
+│   ├── mobilefacenet.param     ← MobileFaceNet ncnn param file
+│   └── mobilefacenet.bin       ← MobileFaceNet ncnn weights
+└── bar_float16.tflite          ← YOLOv8-nano barcode detector (TFLite float16)
 ```
 
-### 5. (Optional) Run as a systemd service on boot
+### 6 · Run
 
 ```bash
-sudo cp scripts/visionsense.service /etc/systemd/system/
-sudo systemctl enable visionsense
-sudo systemctl start visionsense
+python main.py
+```
+
+### 7 · (Optional) Autostart on boot
+
+```bash
+sudo cp scripts/smart-specs.service /etc/systemd/system/
+sudo systemctl enable smart-specs
+sudo systemctl start smart-specs
 ```
 
 ---
@@ -164,36 +159,30 @@ sudo systemctl start visionsense
 ## 📂 Project Structure
 
 ```
-VisionSense/
+smart-specs/
 │
-├── firmware/                   # Raspberry Pi setup & GPIO
-│   ├── setup.sh                # One-shot Pi configuration script
-│   ├── camera_init.py          # Camera module initialisation
-│   └── gpio_buttons.py         # Physical button controls (vol, pause)
+├── main.py                  # Conductor — main loop, display, mode callbacks
+├── state.py                 # Mode finite state machine + button/double-tap logic
+├── core.py                  # Hardware init (camera, I2C, ToF, IMU, haptics, audio)
+├── models.py                # AI model loader — all models loaded once at boot
+├── bluetooth_handler.py     # BLE listener for ESP32 remote (Bleak, auto-reconnect)
 │
-├── models/                     # AI model weights
-│   ├── yolov8n.onnx            # Object detection (download via script)
-│   ├── midas_v21_small.onnx    # Depth estimation (download via script)
-│   └── labels.txt              # COCO class names
+├── tasks/
+│   ├── navigation.py        # Obstacle detection via ToF depth grid + audio/haptic
+│   ├── vision_tasks.py      # Face recog, face add, object ID, barcode, scene
+│   └── comms.py             # Video call frame streaming
 │
-├── audio_engine/               # Spatial audio & TTS
-│   ├── spatial_audio.py        # Stereo panning & volume logic
-│   ├── tts_engine.py           # Text-to-speech wrapper (pyttsx3)
-│   ├── priority_queue.py       # Hazard alert priority system
-│   └── scene_composer.py       # Natural language scene descriptions
+├── models/
+│   ├── mobilefacenet.param  # Face embedding model (ncnn)
+│   └── mobilefacenet.bin
 │
-├── tests/                      # Test suite
-│   ├── test_detection.py       # Unit tests for detect.py
-│   ├── test_audio.py           # Audio engine tests
-│   └── fixtures/               # Sample frames & expected outputs
+├── face_db.pkl              # Enrolled face embeddings (auto-created on first enroll)
+├── scanned_products.csv     # barcode → product name lookup table
+├── bar_float16.tflite       # YOLOv8-nano barcode region detector
 │
 ├── scripts/
-│   ├── download_models.py      # Model downloader
-│   └── visionsense.service     # systemd unit file
+│   └── smart-specs.service  # systemd unit file for autostart
 │
-├── detect.py                   # Main detection loop
-├── audio_feedback.py           # Audio pipeline entry point
-├── config.yaml                 # All tunable parameters
 ├── requirements.txt
 ├── LICENSE
 └── README.md
@@ -201,106 +190,222 @@ VisionSense/
 
 ---
 
-## ⚙️ Configuration
+## 🎮 Controls
 
-All parameters are tunable via `config.yaml`:
+### Bluetooth Remote (ESP32)
 
-```yaml
-detection:
-  model: models/yolov8n.onnx
-  confidence_threshold: 0.45
-  iou_threshold: 0.5
-  target_fps: 30
-  input_size: [640, 480]
+| Button | Single Press | Double-tap |
+|--------|-------------|------------|
+| **1** | Toggle Face Recog ↔ Face Add | — |
+| **2** | Toggle Object ID ↔ Barcode | — |
+| **3** | Toggle Scene ↔ Video Call | — |
+| **4 / H** | Trigger action in current mode | **Hard reset → Navigation** |
 
-audio:
-  mode: spatial            # spatial | mono | verbose
-  tts_rate: 160            # words per minute
-  pan_strength: 0.85       # 0.0 = center, 1.0 = hard pan
-  min_announce_gap: 2.5    # seconds between repeat announcements
-  priority_classes:        # always interrupt for these
-    - person
-    - car
-    - bicycle
-    - stairs
-    - door
+Pressing button 1/2/3 from any mode jumps directly to that group — no home step needed. Only button 4 can reset to Navigation, preventing accidental resets.
 
-depth:
-  enabled: true
-  model: models/midas_v21_small.onnx
-  near_threshold: 0.8      # objects closer than this trigger alerts
+### Keyboard Fallback (dev / testing)
 
-power:
-  low_power_mode: false
-  low_power_fps: 12
-  thermal_limit_celsius: 75
+| Key | Action |
+|-----|--------|
+| `1` / `2` / `3` | Switch mode group |
+| `4` or `H` / `h` | Trigger (double-tap within 0.55 s = hard reset) |
+| `ESC` | Quit |
+
+### Per-Mode Trigger (Button 4 — single press)
+
+| Mode | What H does |
+|------|------------|
+| Navigation | No-op |
+| Face Recognition | Announces "Scanning for faces." |
+| Face Add | Starts enrollment; if in progress, announces status |
+| Object Identifier | Sends cropped ROI to Gemini for identification |
+| Barcode | Announces "Point camera at a barcode." |
+| Scene | Sends full frame to Gemini for scene description |
+| Video Call | Confirms active; auto-exits to Nav if call already dropped |
+
+---
+
+## 🧠 AI Models
+
+| Model | Framework | Task | Runs |
+|-------|-----------|------|------|
+| MobileFaceNet | ncnn (ARM-optimised) | 128-dim face embedding | On-device |
+| MediaPipe Face Detection | MediaPipe | Face bounding box, short-range | On-device |
+| YOLOv8n (barcode) | TFLite float16 | Barcode region detection | On-device |
+| Gemini 2.5 Flash | Google Cloud API | Object ID + Scene description | Cloud |
+
+All models except Gemini run **entirely on-device** with no network required. Gemini is only called when the user explicitly triggers Object ID or Scene mode.
+
+All models are loaded **once at boot** by `models.load_all()` so mode switching is instantaneous with zero load latency.
+
+---
+
+## 🧭 Navigation Pipeline
+
+The VL53L5CX fires an 8×8 grid of IR pulses at 15 Hz. `navigation.py` partitions the grid into three horizontal zones (left / centre / right) and computes the median distance per zone:
+
+```
+Zone thresholds (configurable in navigation.py):
+  DANGER  < 400 mm  → Haptic burst (all 3 motors) + urgent voice alert
+  WARNING < 800 mm  → Directional haptic pulse + cue ("obstacle on left")
+  CLEAR   ≥ 800 mm  → Silent
+```
+
+Haptic motors fire with PWM duty cycles proportional to proximity — BCM 17 = left, 27 = centre, 22 = right — giving directional tactile feedback independent of audio.
+
+The navigation thread runs continuously in the background gated by `state.nav_active_event`. When any other mode is active, the thread suspends full obstacle audio but keeps a low-power haptic sentry running.
+
+---
+
+## 👤 Face Recognition Pipeline
+
+1. **MediaPipe** (`model_selection=0`, short-range < 2 m) detects and crops the face bounding box.
+2. The crop is resized to **112×112** and passed through **MobileFaceNet** (ncnn) to produce a **128-dimensional L2-normalised embedding**.
+3. The embedding is compared against all entries in `face_db.pkl` using **cosine similarity**.
+4. If the best match exceeds the confidence threshold (default `0.6`), the person's name is spoken aloud.
+
+### Enrolling a new face
+
+1. Switch to **Face Add** mode (press Button 1 once or twice depending on current mode).
+2. Press **H** to begin enrollment.
+3. The system captures multiple frames, averages the embeddings, and saves to `face_db.pkl`.
+4. Switching away from Face Add mode cancels an in-progress enrollment and announces "Enrollment cancelled."
+
+---
+
+## 📊 Barcode Scanner
+
+`bar_float16.tflite` (YOLOv8-nano, float16) detects the barcode bounding box in the frame. The decoded barcode value is looked up in `scanned_products.csv` (two-column CSV: `barcode,product_name`) and the product name is read aloud. If the value is not found locally, the raw barcode is announced.
+
+To extend the product database, append rows to `scanned_products.csv`:
+
+```csv
+8901234567890,Colgate Total Toothpaste 150g
+4005808224708,Nivea Moisturising Cream 250ml
+0012000161155,Pepsi 330ml Can
 ```
 
 ---
 
-## 🧪 Running Tests
+## 🔵 Bluetooth Remote Protocol
+
+The ESP32 remote advertises as **`ESP32-REMOTE`** and sends single-byte BLE notifications on characteristic UUID `12345678-1234-5678-1234-56789abcdef1`.
+
+| Byte | Button |
+|------|--------|
+| `0x01` | Button 1 — Mode group A |
+| `0x02` | Button 2 — Mode group B |
+| `0x03` | Button 3 — Mode group C |
+| `0x04` | Button 4 — Home / Trigger |
+
+`bluetooth_handler.py` uses **Bleak** with exponential back-off reconnection (starts at 2 s, doubles each failed attempt, capped at 30 s, resets to 2 s after each successful session). All double-tap and mode-reset logic lives entirely in `state.py` — the BT handler only delivers raw press events as fast as possible.
+
+---
+
+## ⚙️ Key Configuration
+
+No config file yet — parameters are constants inside each module:
+
+| Parameter | Module | Default | Description |
+|-----------|--------|---------|-------------|
+| `GENAI_API_KEY` | `models.py` | `""` | Gemini API key |
+| `DB_PATH` | `models.py` | `~/Desktop/SPEC/face_db.pkl` | Face database path |
+| `BARCODE_MODEL_PATH` | `models.py` | `bar_float16.tflite` | TFLite barcode model |
+| `HAPTIC_PINS` | `core.py` | `[17, 27, 22]` | BCM GPIO for L/C/R haptic |
+| `_H_DOUBLE_TAP_WINDOW` | `state.py` | `0.55 s` | Max gap between two H presses |
+| `DEVICE_NAME` | `bluetooth_handler.py` | `ESP32-REMOTE` | BLE advertised device name |
+| `CHAR_UUID` | `bluetooth_handler.py` | `12345678-...` | BLE notify characteristic UUID |
+
+---
+
+## 📦 requirements.txt
+
+```
+opencv-python
+numpy
+mediapipe
+tflite-runtime
+ncnn
+bleak
+smbus2
+RPi.GPIO
+pyaudio
+google-genai
+Pillow
+```
+
+---
+
+## ⚠️ Security Notes
+
+`del.py` and `models.py` contain hardcoded API keys for development convenience. **Never commit real API keys to a public repository.**
+
+Use environment variables in production:
 
 ```bash
-# Run all tests
-pytest tests/ -v
+export GEMINI_API_KEY="your-key-here"
+```
 
-# Run with coverage report
-pytest tests/ --cov=. --cov-report=term-missing
-
-# Test audio engine only
-pytest tests/test_audio.py -v
+```python
+# In models.py
+import os
+GENAI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 ```
 
 ---
 
 ## 🗺 Roadmap
 
-- [x] YOLOv8 real-time detection pipeline
-- [x] Spatial stereo audio engine
-- [x] Distance-based volume scaling
-- [x] Priority hazard alert system
-- [x] Natural TTS scene descriptions
-- [ ] GPT-powered richer scene narration
-- [ ] GPS integration for outdoor waypoints
-- [ ] Companion mobile app (iOS/Android)
+- [x] 7-mode state machine with BLE remote
+- [x] VL53L5CX 8×8 ToF navigation with directional haptic + audio
+- [x] MobileFaceNet face recognition (ncnn, fully on-device)
+- [x] Live face enrollment with `face_db.pkl` persistence
+- [x] YOLOv8n TFLite barcode detection + CSV product lookup
+- [x] Gemini-powered object identification
+- [x] Gemini-powered scene description
+- [x] Video call frame streaming
+- [x] Bluetooth remote with double-tap hard reset
+- [ ] Centralised `config.yaml` for all tunable parameters
+- [ ] OCR for reading signs, labels, and printed text
+- [ ] Richer offline TTS voices (Coqui / Piper TTS)
+- [ ] GPS waypoint narration for outdoor navigation
+- [ ] Companion mobile app (Android / iOS)
 - [ ] Multi-language TTS support
-- [ ] Custom wake-word activation ("Hey Vision")
-- [ ] Sign & text recognition (OCR)
-- [ ] Face recognition for familiar people
+- [ ] Wake-word activation ("Hey Specs")
+- [ ] Low-power adaptive frame-skip based on battery level
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome and appreciated!
-
 1. Fork the repository
-2. Create your feature branch: `git checkout -b feat/my-feature`
-3. Commit your changes: `git commit -m 'feat: add my feature'`
-4. Push to the branch: `git push origin feat/my-feature`
-5. Open a Pull Request
+2. Create a feature branch: `git checkout -b feat/my-feature`
+3. Commit with a clear message: `git commit -m 'feat: add IMU-based tilt compensation'`
+4. Push and open a Pull Request
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) and ensure all tests pass before submitting.
+Please ensure `python -m pytest tests/` passes before submitting.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
+MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
 ## 🙏 Acknowledgements
 
-- [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics) — object detection backbone
-- [Intel MiDaS](https://github.com/isl-org/MiDaS) — monocular depth estimation
-- [pyttsx3](https://github.com/nateshmbhat/pyttsx3) — offline text-to-speech
-- The visually impaired community — for feedback, testing, and inspiration
+- [Tencent ncnn](https://github.com/Tencent/ncnn) — high-performance ARM neural network inference
+- [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics) — barcode region detection backbone
+- [MediaPipe](https://mediapipe.dev) — Google's face detection pipeline
+- [Bleak](https://github.com/hbldh/bleak) — cross-platform async BLE client for Python
+- [Google Gemini](https://ai.google.dev) — scene understanding and object identification
+- [STMicroelectronics VL53L5CX](https://www.st.com/en/imaging-and-photonics-solutions/vl53l5cx.html) — multizone ToF ranging sensor
 
 ---
 
 <div align="center">
 
-Built with ❤️ for accessibility · [Report a Bug](https://github.com/accessibility-ai/VisionSense/issues) · [Request a Feature](https://github.com/accessibility-ai/VisionSense/issues)
+Built with ❤️ for accessibility · [Report a Bug](../../issues) · [Request a Feature](../../issues)
 
 </div>
