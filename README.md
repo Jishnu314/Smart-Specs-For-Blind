@@ -17,11 +17,11 @@
 
 ## 🌍 Overview
 
-**Smart Specs** is an assistive wearable device that gives visually impaired users an intelligent, real-time understanding of their surroundings. Mounted in a pair of spectacles, it fuses a camera, an 8×8 Time-of-Flight depth sensor, an IMU, and bone-conduction speakers into a single pipeline that turns the visual world into spoken audio.
+**Smart Specs** is an assistive wearable device that gives visually impaired users an intelligent, real-time understanding of their surroundings. Mounted in a pair of spectacles, it fuses a camera, an 8×8 Time-of-Flight depth sensor, an IMU, and speakers into a single pipeline that turns the visual world into spoken audio.
 
 The user navigates through **7 modes** — each focused on a specific task — switched instantly via a 3-button Bluetooth remote (ESP32). All AI inference runs **fully on-device**; an internet connection is only needed for Gemini-powered scene and object descriptions.
 
-> *"Person ahead. Door to your left. Stairs — be careful."*
+> *"Move right,stop,path clear"*
 
 ---
 
@@ -32,7 +32,7 @@ The user navigates through **7 modes** — each focused on a specific task — s
 | 🧭 **Navigation** | Continuous obstacle detection via VL53L5CX 8×8 ToF depth grid + haptic & audio warnings |
 | 👤 **Face Recognition** | Identifies enrolled people by name using MobileFaceNet (ncnn) + MediaPipe |
 | ➕ **Face Add** | Enroll a new face live — multi-sample capture, averaged embedding, saved to `face_db.pkl` |
-| 📦 **Object Identifier** | Press H → Gemini AI describes the object held in front of the camera in plain English |
+| 📦 **Object Identifier** | Press H (Master Switch) → Gemini AI describes the object held in front of the camera in plain English |
 | 📊 **Barcode Scanner** | TFLite YOLOv8n locates the barcode region; result looked up in `scanned_products.csv` |
 | 🖼 **Scene Mode** | Press H → Gemini describes the full scene in one clear spoken sentence |
 | 📞 **Video Call** | Streams live camera frames to a remote viewer over a peer connection |
