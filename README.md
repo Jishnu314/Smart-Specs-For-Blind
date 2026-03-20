@@ -7,7 +7,7 @@
 *Real-time computer vision · Spatial audio · Edge AI · Wearable*
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3572A5?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-5-C51A4A?style=flat-square&logo=raspberrypi&logoColor=white)](https://raspberrypi.org)
+[![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-4-C51A4A?style=flat-square&logo=raspberrypi&logoColor=white)](https://raspberrypi.org)
 [![Gemini](https://img.shields.io/badge/Gemini-2.5%20Flash-4285F4?style=flat-square&logo=google&logoColor=white)](https://ai.google.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
 
@@ -80,12 +80,12 @@ The user navigates through **7 modes** — each focused on a specific task — s
 
 | Component | Spec | Notes |
 |-----------|------|-------|
-| Raspberry Pi 5 | 4 GB or 8 GB | Main compute unit |
+| Raspberry Pi 4 | 8 GB | Main compute unit |
 | Camera Module | IMX219 or USB cam | 640×480, connected on `/dev/video0` |
 | VL53L5CX | 8×8 ToF sensor | I2C bus 1 — navigation depth grid |
 | MPU-6500 | IMU, I2C addr `0x68` | Step detection & tilt compensation |
 | Haptic motors | 3× ERM/LRA motors | BCM GPIO 17 (L), 27 (C), 22 (R) |
-| Bone conduction speakers | 3.5 mm or BT | Leaves ears open for ambient sound |
+| Speakers | 3.5 mm or BT | Leaves ears open for ambient sound |
 | ESP32 remote | BLE, advertised as `ESP32-REMOTE` | 3 mode buttons + 1 trigger/home |
 
 ### Optional
