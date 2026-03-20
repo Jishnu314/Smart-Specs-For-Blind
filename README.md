@@ -20,7 +20,7 @@
 
 ## 🌍 Overview
 
-**VisionSense** is an open-source assistive technology project that transforms a pair of smart spectacles into an intelligent navigation companion for visually impaired users.
+**VisionSense** is an open-source assistive technology project that transforms a pair of smart spectacles into an intelligent navigation / assistive companion for visually impaired users.
 
 By combining **edge AI object detection**, **depth estimation**, and **spatial audio synthesis**, VisionSense converts the visual world into an intuitive audio landscape — helping users:
 
