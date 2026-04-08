@@ -86,6 +86,9 @@ Zone thresholds (configurable in navigation.py):
   CLEAR   ≥ 800 mm  → Silent
 ```
 Haptic motors fire with PWM duty cycles proportional to proximity — BCM 17 = left, 27 = centre, 22 = right — giving directional tactile feedback independent of audio.
+
+The navigation thread runs continuously in the background gated by `state.nav_active_event`. When any other mode is active, the thread suspends full obstacle audio but keeps a low-power haptic sentry running.
+
 ---
 **Face Recognition Mode:**  
 The camera detects and recognizes known faces using MediaPipe and MobileFaceNet-based embeddings.
