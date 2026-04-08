@@ -72,24 +72,58 @@ Pressing button 1/2/3 from any mode jumps directly to that group — no home ste
 | Scene | Sends full frame to Gemini for scene description |
 | Video Call | Confirms active; auto-exits to Nav if call already dropped |
 
----
+
 
 ### 5.1 Operational Modes
 
 **Navigation Mode:**  
 The VL53L5CX depth sensor measures obstacle proximity across an 8x8 grid. Directional haptic feedback helps the user understand where obstacles are located.
 
+```
+Zone thresholds (configurable in navigation.py):
+  DANGER  < 400 mm  → Haptic burst (all 3 motors) + urgent voice alert
+  WARNING < 800 mm  → Directional haptic pulse + cue ("obstacle on left")
+  CLEAR   ≥ 800 mm  → Silent
+```
+Haptic motors fire with PWM duty cycles proportional to proximity — BCM 17 = left, 27 = centre, 22 = right — giving directional tactile feedback independent of audio.
+---
 **Face Recognition Mode:**  
 The camera detects and recognizes known faces using MediaPipe and MobileFaceNet-based embeddings.
 
+## 👤 Face Recognition Pipeline
+
+1. **MediaPipe** (`model_selection=0`, short-range < 2 m) detects and crops the face bounding box.
+2. The crop is resized to **112×112** and passed through **MobileFaceNet** (ncnn) to produce a **128-dimensional L2-normalised embedding**.
+3. The embedding is compared against all entries in `face_db.pkl` using **cosine similarity**.
+4. If the best match exceeds the confidence threshold (default `0.6`), the person's name is spoken aloud.
+
 **Face Enrollment Mode:**  
 New people can be added through a guided multi-step face capture process.
+
+
+### Enrolling a new face
+
+1. Switch to **Face Add** mode (press Button 1 once or twice depending on current mode).
+2. Press **H** to begin enrollment.
+3. The system captures multiple frames, averages the embeddings, and saves to `face_db.pkl`.
+4. Switching away from Face Add mode cancels an in-progress enrollment and announces "Enrollment cancelled."
+
+---
+
 
 **Object Identification Mode:**  
 The user points the camera toward an object and receives an AI-generated spoken description.
 
 **Barcode Scanner Mode:**  
 The system detects barcodes and decodes them using image preprocessing and barcode localization support.
+
+`bar_float16.tflite` (YOLOv8-nano, float16) detects the barcode bounding box in the frame. The decoded barcode value is looked up in `scanned_products.csv` (two-column CSV: `barcode,product_name`) and the product name is read aloud. If the value is not found locally, the raw barcode is announced.
+
+```csv
+8901234567890,Colgate Total Toothpaste 150g
+4005808224708,Nivea Moisturising Cream 250ml
+0012000161155,Pepsi 330ml Can
+```
 
 **Scene Description Mode:**  
 A single command triggers a short spoken description of the surrounding environment.
@@ -130,6 +164,41 @@ At startup, the system initializes the camera, sensors, haptics, audio stack, an
 
 The user interacts through the BLE remote. Buttons switch between modes, while the action button triggers the main task in the selected mode. Navigation and fall detection continue in the background regardless of the visible mode. If a fall is detected and the user does not respond, the system sends an alert through Firebase so that a caregiver can take action.
 
+
+## 🏗 System Architecture
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                         Smart Specs Runtime                      │
+│                                                                  │
+│  ┌──────────┐   ┌───────────┐   ┌──────────────────────────┐   │
+│  │  Camera  │──▶│  core.py  │──▶│         main.py          │   │
+│  │ 640×480  │   │ (Hardware)│   │  (Conductor / main loop) │   │
+│  └──────────┘   └─────┬─────┘   └────────────┬─────────────┘   │
+│                        │                      │                  │
+│  ┌──────────┐          │         ┌────────────▼──────────────┐  │
+│  │VL53L5CX  │──────────┤         │        state.py           │  │
+│  │8×8 ToF   │          │         │  (Mode FSM + Button Logic) │  │
+│  └──────────┘          │         └────────────┬──────────────┘  │
+│                        │                      │                  │
+│  ┌──────────┐          │         ┌────────────▼──────────────┐  │
+│  │ MPU-6500 │──────────┤         │        models.py          │  │
+│  │   IMU    │          │         │  MobileFaceNet · TFLite   │  │
+│  └──────────┘          │         │  MediaPipe · Gemini       │  │
+│                        │         └────────────┬──────────────┘  │
+│  ┌──────────┐          │                      │                  │
+│  │  Haptic  │◀─────────┘         ┌────────────▼──────────────┐  │
+│  │  Motors  │                    │  tasks/  (per-mode logic)  │  │
+│  └──────────┘                    │  navigation · vision_tasks │  │
+│                                  │  comms                     │  │
+│  ┌──────────┐                    └────────────────────────────┘  │
+│  │ ESP32-BT │──▶ bluetooth_handler.py ──▶ state.handle_button()  │
+│  │  Remote  │                                                    │
+│  └──────────┘                                                    │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+---
 ## 9. Key Technical Contributions
 
 The project demonstrates several practical engineering contributions:
