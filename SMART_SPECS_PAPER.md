@@ -1,10 +1,10 @@
 # Smart Specs for the Blind
 ## A Multimodal Wearable Assistive Device for the Visually Impaired
 
-**Author:** Rohith K.  
-**Department:** Department of Electronics and Communication Engineering  
-**Institution:** [Replace with institution name]  
-**Email:** [Replace with email]
+**Author:** Jishnu K.  
+**Department:** Department of Applied Electronics and Instrumentaion Engineering  
+**Institution:** GECK 
+
 
 ## Abstract
 
