@@ -76,7 +76,7 @@ Pressing button 1/2/3 from any mode jumps directly to that group — no home ste
 
 ### 5.1 Operational Modes
 
-**Navigation Mode:**  
+## Navigation Mode 
 The VL53L5CX depth sensor measures obstacle proximity across an 8x8 grid. Directional haptic feedback helps the user understand where obstacles are located.
 
 ```
@@ -90,12 +90,13 @@ Haptic motors fire with PWM duty cycles proportional to proximity — BCM 17 = l
 The navigation thread runs continuously in the background gated by `state.nav_active_event`. When any other mode is active, the thread suspends full obstacle audio but keeps a low-power haptic sentry running.
 
 ---
-##👤 Face Recognition
+## 👤 Face Recognition  
+
 **Face Recognition Mode:**  
 The camera detects and recognizes known faces using MediaPipe and MobileFaceNet-based embeddings.
 
-** Fcae Recognition Pipeline**
-
+**Face Recognition Pipeline
+**
 1. **MediaPipe** (`model_selection=0`, short-range < 2 m) detects and crops the face bounding box.
 2. The crop is resized to **112×112** and passed through **MobileFaceNet** (ncnn) to produce a **128-dimensional L2-normalised embedding**.
 3. The embedding is compared against all entries in `face_db.pkl` using **cosine similarity**.
@@ -105,7 +106,7 @@ The camera detects and recognizes known faces using MediaPipe and MobileFaceNet-
 New people can be added through a guided multi-step face capture process.
 
 
-### Enrolling a new face
+**Enrolling a new face**
 
 1. Switch to **Face Add** mode (press Button 1 once or twice depending on current mode).
 2. Press **H** to begin enrollment.
@@ -115,10 +116,10 @@ New people can be added through a guided multi-step face capture process.
 ---
 
 
-**Object Identification Mode:**  
+## Object Identification Mode:
 The user points the camera toward an object and receives an AI-generated spoken description.
 
-**Barcode Scanner Mode:**  
+## Barcode Scanner Mode  
 The system detects barcodes and decodes them using image preprocessing and barcode localization support.
 
 `bar_float16.tflite` (YOLOv8-nano, float16) detects the barcode bounding box in the frame. The decoded barcode value is looked up in `scanned_products.csv` (two-column CSV: `barcode,product_name`) and the product name is read aloud. If the value is not found locally, the raw barcode is announced.
@@ -129,10 +130,10 @@ The system detects barcodes and decodes them using image preprocessing and barco
 0012000161155,Pepsi 330ml Can
 ```
 
-**Scene Description Mode:**  
+## Scene Description Mode:
 A single command triggers a short spoken description of the surrounding environment.
 
-**Video Call Mode:**  
+## Video Call Mode
 The user can contact a caregiver through a LiveKit-based communication channel.
 
 ## 6. Hardware Components
