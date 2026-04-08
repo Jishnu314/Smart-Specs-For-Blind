@@ -101,7 +101,7 @@ The user navigates through **7 modes** — each focused on a specific task — s
 ### 1 · Clone
 
 ```bash
-git clone https://github.com/your-username/smart-specs.git
+git clone https://github.com/jishnu314.git/smart-specs.git
 cd smart-specs
 ```
 
