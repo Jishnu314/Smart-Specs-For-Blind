@@ -50,6 +50,30 @@ Recent advances in lightweight computer vision models and cloud-based multimodal
 
 Smart Specs is a glasses-mounted wearable assistive device controlled through a four-button BLE remote. The device continuously runs navigation and safety monitoring in the background while allowing the user to switch between multiple functional modes.
 
+### Bluetooth Remote (ESP32)
+
+| Button | Single Press | Double-tap |
+|--------|-------------|------------|
+| **1** | Toggle Face Recog ↔ Face Add | — |
+| **2** | Toggle Object ID ↔ Barcode | — |
+| **3** | Toggle Scene ↔ Video Call | — |
+| **4 / H** | Trigger action in current mode | **Hard reset → Navigation** |
+
+Pressing button 1/2/3 from any mode jumps directly to that group — no home step needed. Only button 4 can reset to Navigation, preventing accidental resets.
+### Per-Mode Trigger (Button 4 — single press)
+
+| Mode | What H does |
+|------|------------|
+| Navigation | No-op |
+| Face Recognition | Announces "Scanning for faces." |
+| Face Add | Starts enrollment; if in progress, announces status |
+| Object Identifier | Sends cropped ROI to Gemini for identification |
+| Barcode | Announces "Point camera at a barcode." |
+| Scene | Sends full frame to Gemini for scene description |
+| Video Call | Confirms active; auto-exits to Nav if call already dropped |
+
+---
+
 ### 5.1 Operational Modes
 
 **Navigation Mode:**  
