@@ -90,10 +90,11 @@ Haptic motors fire with PWM duty cycles proportional to proximity — BCM 17 = l
 The navigation thread runs continuously in the background gated by `state.nav_active_event`. When any other mode is active, the thread suspends full obstacle audio but keeps a low-power haptic sentry running.
 
 ---
+##👤 Face Recognition
 **Face Recognition Mode:**  
 The camera detects and recognizes known faces using MediaPipe and MobileFaceNet-based embeddings.
 
-## 👤 Face Recognition Pipeline
+** Fcae Recognition Pipeline**
 
 1. **MediaPipe** (`model_selection=0`, short-range < 2 m) detects and crops the face bounding box.
 2. The crop is resized to **112×112** and passed through **MobileFaceNet** (ncnn) to produce a **128-dimensional L2-normalised embedding**.
