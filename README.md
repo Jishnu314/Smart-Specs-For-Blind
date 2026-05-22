@@ -268,4 +268,3 @@ pyaudio
 google-genai
 Pillow
 
----
