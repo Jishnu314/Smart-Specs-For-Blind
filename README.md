@@ -2,7 +2,7 @@
 
 # 👓 Smart Specs
 
-### Open-Source Assistive Spectacles for the Visually Impaired
+###  Assistive Spectacles for the Visually Impaired
 
 *Real-time computer vision · Spatial audio · Edge AI · Wearable*
 
