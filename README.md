@@ -25,6 +25,12 @@ The user navigates through **7 modes** — each focused on a specific task — s
 
 ---
 
+Prototype 
+<div align="center">
+  <img src="<img width="1920" height="1080" alt="11" src="https://github.com/user-attachments/assets/ece39f0d-2e6d-42b3-92fb-d29e97ecd0a9" />
+" alt="Prototype" width="300"/>
+</div>
+
 ## ✨ Features at a Glance
 
 | Mode | What it does |
