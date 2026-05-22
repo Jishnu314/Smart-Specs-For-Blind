@@ -28,7 +28,7 @@ The user navigates through **7 modes** — each focused on a specific task — s
 ## Prototype
 
 <div align="center">
-  <img width="300" alt="Prototype" src="https://github.com/user-attachments/assets/ece39f0d-2e6d-42b3-92fb-d29e97ecd0a9" />
+  <img width="500" alt="Prototype" src="https://github.com/user-attachments/assets/ece39f0d-2e6d-42b3-92fb-d29e97ecd0a9" />
 </div>
 
 ## ✨ Features at a Glance
