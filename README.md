@@ -96,99 +96,7 @@ The user navigates through **7 modes** — each focused on a specific task — s
 
 ---
 
-## ⚡ Quickstart
 
-### 1 · Clone
-
-```bash
-git clone https://github.com/jishnu314.git/smart-specs.git
-cd smart-specs
-```
-
-### 2 · Install system dependencies
-
-```bash
-sudo apt update && sudo apt install -y \
-  python3-pip libportaudio2 espeak \
-  libatlas-base-dev libjasper-dev libhdf5-dev
-```
-
-### 3 · Install Python packages
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4 · Set your Gemini API key
-
-Open `models.py` and replace the placeholder:
-
-```python
-GENAI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"
-```
-
-> Get a free key at [aistudio.google.com](https://aistudio.google.com).
-> For production use, load it from an environment variable instead — see [Security Notes](#️-security-notes).
-
-### 5 · Place model files
-
-```
-smart-specs/
-├── models/
-│   ├── mobilefacenet.param     ← MobileFaceNet ncnn param file
-│   └── mobilefacenet.bin       ← MobileFaceNet ncnn weights
-└── bar_float16.tflite          ← YOLOv8-nano barcode detector (TFLite float16)
-```
-
-### 6 · Run
-
-```bash
-python main.py
-```
-
-### 7 · (Optional) Autostart on boot
-
-```bash
-sudo cp scripts/smart-specs.service /etc/systemd/system/
-sudo systemctl enable smart-specs
-sudo systemctl start smart-specs
-```
-
----
-
-## 📂 Project Structure
-
-```
-smart-specs/
-│
-├── main.py                  # Conductor — main loop, display, mode callbacks
-├── state.py                 # Mode finite state machine + button/double-tap logic
-├── core.py                  # Hardware init (camera, I2C, ToF, IMU, haptics, audio)
-├── models.py                # AI model loader — all models loaded once at boot
-├── bluetooth_handler.py     # BLE listener for ESP32 remote (Bleak, auto-reconnect)
-│
-├── tasks/
-│   ├── navigation.py        # Obstacle detection via ToF depth grid + audio/haptic
-│   ├── vision_tasks.py      # Face recog, face add, object ID, barcode, scene
-│   └── comms.py             # Video call frame streaming
-│
-├── models/
-│   ├── mobilefacenet.param  # Face embedding model (ncnn)
-│   └── mobilefacenet.bin
-│
-├── face_db.pkl              # Enrolled face embeddings (auto-created on first enroll)
-├── scanned_products.csv     # barcode → product name lookup table
-├── bar_float16.tflite       # YOLOv8-nano barcode region detector
-│
-├── scripts/
-│   └── smart-specs.service  # systemd unit file for autostart
-│
-├── requirements.txt
-├── LICENSE
-└── README.md
-```
-
----
 
 ## 🎮 Controls
 
@@ -332,25 +240,6 @@ RPi.GPIO
 pyaudio
 google-genai
 Pillow
-```
-
----
-
-## ⚠️ Security Notes
-
-`del.py` and `models.py` contain hardcoded API keys for development convenience. **Never commit real API keys to a public repository.**
-
-Use environment variables in production:
-
-```bash
-export GEMINI_API_KEY="your-key-here"
-```
-
-```python
-# In models.py
-import os
-GENAI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-```
 
 ---
 
