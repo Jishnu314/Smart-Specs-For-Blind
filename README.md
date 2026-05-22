@@ -226,26 +226,9 @@ No config file yet — parameters are constants inside each module:
 
 ---
 
-## 📦 requirements.txt
-
-```
-opencv-python
-numpy
-mediapipe
-tflite-runtime
-ncnn
-bleak
-smbus2
-RPi.GPIO
-pyaudio
-google-genai
-Pillow
-
 ---
----
-
 ## 🗺 Roadmap
-
+---
 - [x] 7-mode state machine with BLE remote
 - [x] VL53L5CX 8×8 ToF navigation with directional haptic + audio
 - [x] MobileFaceNet face recognition (ncnn, fully on-device)
@@ -266,36 +249,23 @@ Pillow
 
 ---
 
-## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feat/my-feature`
-3. Commit with a clear message: `git commit -m 'feat: add IMU-based tilt compensation'`
-4. Push and open a Pull Request
-
-Please ensure `python -m pytest tests/` passes before submitting.
 
 ---
 
-## 📄 License
+## 📦 requirements.txt
 
-MIT License — see [LICENSE](LICENSE) for details.
+```
+opencv-python
+numpy
+mediapipe
+tflite-runtime
+ncnn
+bleak
+smbus2
+RPi.GPIO
+pyaudio
+google-genai
+Pillow
 
 ---
-
-## 🙏 Acknowledgements
-
-- [Tencent ncnn](https://github.com/Tencent/ncnn) — high-performance ARM neural network inference
-- [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics) — barcode region detection backbone
-- [MediaPipe](https://mediapipe.dev) — Google's face detection pipeline
-- [Bleak](https://github.com/hbldh/bleak) — cross-platform async BLE client for Python
-- [Google Gemini](https://ai.google.dev) — scene understanding and object identification
-- [STMicroelectronics VL53L5CX](https://www.st.com/en/imaging-and-photonics-solutions/vl53l5cx.html) — multizone ToF ranging sensor
-
----
-
-<div align="center">
-
-Built with ❤️ for accessibility · [Report a Bug](../../issues) · [Request a Feature](../../issues)
-
-</div>
